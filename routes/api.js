@@ -1,28 +1,14 @@
-/*
-*
-*
-*       Complete the API routing below
-*
-*
-*/
 
 'use strict';
 
 var expect = require('chai').expect;
 var MongoClient = require('mongodb');
-
+var unirest = require('unirest');
 
 const CONNECTION_STRING = process.env.DB;
 
-module.exports = function (app, unirest) {
+module.exports = function(app, db) {
 
-  MongoClient.connect(CONNECTION_STRING, function(err, db) {
-    if (err) {
-      return console.log(err)
-    }
-    
-  
-    console.log("Succesful Database Connection")
     
        var accessApi = function(stock) {
           return new Promise(function(resolve, reject){
@@ -51,8 +37,11 @@ module.exports = function (app, unirest) {
          })
        }
        
-       
-
+  //Index page (static HTML)    
+ app.route('/')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/views/index.html');
+  });
 
     app.route('/api/stock-prices')
       .get(function (req, res){
@@ -127,7 +116,7 @@ module.exports = function (app, unirest) {
          Promise.all([likes1, likes2]).then(function(values){
            stock1Likes = values[0];
            stock2Likes = values[1];
-           return res.send({stockData: [{stock: resultsArray[0].symbol, price:(Math.round(resultsArray[0].latestPrice * 100)/100), rel_likes: stock1Likes - stock2Likes},{stock: resultsArray[1].symbol, price:(Math.round(resultsArray[1].latestPrice * 100)/100), rel_likes: stock2Likes - stock1Likes}]})
+           return res.send({stockData: [{stock: resultsArray[0].symbol, price:(Math.round(resultsArray[0].latestPrice * 100)/100).toString(), rel_likes: stock1Likes - stock2Likes},{stock: resultsArray[1].symbol, price:(Math.round(resultsArray[1].latestPrice * 100)/100).toString(), rel_likes: stock2Likes - stock1Likes}]})
          })   
        })
         return;
@@ -157,7 +146,7 @@ module.exports = function (app, unirest) {
              Promise.all([like1, like2]).then(function(likes){
                stock1Likes = likes[0];
                stock2Likes = likes[1]
-           return res.send({stockData: [{stock: resultsArray[0].symbol, price:(Math.round(resultsArray[0].latestPrice * 100)/100), rel_likes: stock1Likes - stock2Likes},{stock: resultsArray[1].symbol, price:(Math.round(resultsArray[1].latestPrice * 100)/100), rel_likes: stock2Likes - stock1Likes}]})
+           return res.send({stockData: [{stock: resultsArray[0].symbol, price:(Math.round(resultsArray[0].latestPrice * 100)/100).toString(), rel_likes: stock1Likes - stock2Likes},{stock: resultsArray[1].symbol, price:(Math.round(resultsArray[1].latestPrice * 100)/100).toString(), rel_likes: stock2Likes - stock1Likes}]})
              })
             
           })
@@ -238,8 +227,6 @@ module.exports = function (app, unirest) {
       }
     
         })
-    
-  });
   
 };
 
